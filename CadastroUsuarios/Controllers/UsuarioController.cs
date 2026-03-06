@@ -1,19 +1,16 @@
 ﻿using CadastroUsuarios.Controllers.Utils;
+using CadastroUsuarios.DTO;
 using CadastroUsuarios.Models;
 using CadastroUsuarios.Service;
 using CadastroUsuarios.Service.Utils.Exceptions;
-using CadastroUsuarios.ViewModel;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Mvc;
 
 namespace CadastroUsuarios.Controllers
 {
+    [RoutePrefix("api/Usuario")]
     public class UsuarioController : ApiController
     {
         private readonly IUsuarioService _service;
@@ -23,33 +20,40 @@ namespace CadastroUsuarios.Controllers
             _service = service;
         }
 
-        public async Task<ActionResult> Index(string filtro = "todos", string termoPesquisa = "")
+        [HttpGet]
+        [Route("")]
+        public async Task<IHttpActionResult> Index(string filtro = "todos", string termoPesquisa = "")
         {
             var query = await _service.PesquisaUsuarioAsync(filtro, termoPesquisa);
-            List<UsuarioViewModel> usuarios = query.Select(u => UsuarioMapper.ToViewModel(u)).ToList();
-
-            ViewBag.FiltroAtual = filtro;
-            ViewBag.TermoPesquisa = termoPesquisa;
-            return View(usuarios);
+            List<UsuarioDTO> usuarios = query.Select(u => UsuarioMapper.ToDto(u)).ToList();
+            return Ok(usuarios);
         }
 
-        public ActionResult Cadastrar()
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<IHttpActionResult> Obter(int id)
         {
-            return View();
+            UsuarioModel usuarioModel = await _service.BuscarPorIdAsync(id);
+
+            if (usuarioModel == null)
+            {
+                return NotFound();
+            }
+
+            UsuarioDTO usuarioDto = UsuarioMapper.ToDto(usuarioModel);
+            return Ok(usuarioDto);
         }
 
-
-        [HttpPost, ActionName("Cadastrar")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Cadastrar(UsuarioViewModel usuarioViewModel)
+        [HttpPost]
+        [Route("")]
+        public async Task<IHttpActionResult> Cadastrar(UsuarioDTO usuarioDto)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.mensagemErro = "Usuário não cadastrado";
-                return View(usuarioViewModel);
+                return BadRequest(ModelState);
             }
 
-            UsuarioModel usuarioModel = UsuarioMapper.ToModel(usuarioViewModel);
+            UsuarioModel usuarioModel = UsuarioMapper.ToModel(usuarioDto);
 
             try
             {
@@ -57,95 +61,63 @@ namespace CadastroUsuarios.Controllers
             }
             catch (ValidacaoException ex)
             {
-                ViewBag.mensagemErro = ex.Message;
-                return View(usuarioViewModel);
+                return BadRequest(ex.Message);
             }
 
-            TempData["mensagemSucesso"] = "Usuário Cadastrado";
-            return RedirectToAction("Index");
-
+            return Ok("Usuário Cadastrado");
         }
 
-        public async Task<ActionResult> Editar(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            UsuarioModel usuarioModel = await _service.BuscarPorIdAsync(id.Value);
-
-            if (usuarioModel == null)
-            {
-                return HttpNotFound();
-            }
-
-            UsuarioViewModel usuarioViewModel = UsuarioMapper.ToViewModel(usuarioModel);
-            return View(usuarioViewModel);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Editar(UsuarioViewModel usuarioViewModel)
+        [HttpPut]
+        [Route("")]
+        public async Task<IHttpActionResult> Editar(UsuarioDTO usuarioDto)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.mensagemErro = "Usuário não atualizado";
-                return View(usuarioViewModel);
+                return BadRequest(ModelState);
             }
 
             try
             {
-                UsuarioModel usuarioModel = UsuarioMapper.ToModel(usuarioViewModel);
+                UsuarioModel usuarioModel = UsuarioMapper.ToModel(usuarioDto);
                 await _service.EditarUsuarioAsync(usuarioModel);
-
             }
             catch (ValidacaoException ex)
             {
-                ViewBag.mensagemErro = ex.Message;
-                return View(usuarioViewModel);
+                return BadRequest(ex.Message);
             }
 
-            TempData["mensagemSucesso"] = "Usuário Atualizado";
-            return RedirectToAction("Index");
+            return Ok("Usuário Atualizado");
         }
 
-        [HttpPost, ActionName("Deletar")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IHttpActionResult> Deletar(int id)
         {
             try
             {
                 await _service.DeletarUsuarioAsync(id);
-
             }
             catch (ValidacaoException ex)
             {
-                ViewBag.mensagemErro = ex.Message;
-                return RedirectToAction("Index");
+                return BadRequest(ex.Message);
             }
-            TempData["mensagemSucesso"] = "Usuário Excluído";
-            return RedirectToAction("Index");
+            return Ok("Usuário Excluído");
         }
 
-        [HttpPost, ActionName("AtualizarStatus")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AtualizarStatus(int id)
+        [HttpPut]
+        [Route("status/{id:int}")]
+        public async Task<IHttpActionResult> AtualizarStatus(int id)
         {
             try
             {
                 await _service.EditarStatusUsuarioAsync(id);
-
             }
             catch (ValidacaoException ex)
             {
-                ViewBag.mensagemErro = ex.Message;
-                return RedirectToAction("Index");
+                return BadRequest(ex.Message);
             }
 
-            TempData["mensagemSucesso"] = "Status do usuário atualizado";
-            return RedirectToAction("Index");
+            return Ok("Status do usuário atualizado");
         }
     }
 }

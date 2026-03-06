@@ -1,11 +1,12 @@
 ﻿using Autofac;
-using Autofac.Integration.Mvc;
+using Autofac.Integration.WebApi;
 using CadastroUsuarios.Controllers.Utils;
 using CadastroUsuarios.Data;
 using CadastroUsuarios.Repositories;
 using CadastroUsuarios.Service;
 using CadastroUsuarios.Service.Utils;
-using System.Web.Mvc;
+using System.Reflection;
+using System.Web.Http;
 
 namespace CadastroUsuarios.App_Start
 {
@@ -23,11 +24,12 @@ namespace CadastroUsuarios.App_Start
             builder.RegisterType<Validators>().InstancePerRequest();
             builder.RegisterType<FiltroQueries>().InstancePerRequest();
 
-            builder.RegisterControllers(typeof(MvcApplication).Assembly);
+            builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
 
             var container = builder.Build();
 
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            var config = GlobalConfiguration.Configuration;
+            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
         }
     }
 }

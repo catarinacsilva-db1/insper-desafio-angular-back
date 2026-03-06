@@ -1,13 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace CadastroUsuarios.ViewModel
+namespace CadastroUsuarios.DTO
 {
-    public class UsuarioViewModel
+    public class UsuarioDTO
     {
         public int Id { get; set; }
 
-        [Display(Name = "Status")]
         public bool Ativo { get; set; }
 
         [Required]

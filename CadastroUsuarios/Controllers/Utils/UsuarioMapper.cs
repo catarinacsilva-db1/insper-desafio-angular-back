@@ -1,14 +1,15 @@
 
+using CadastroUsuarios.DTO;
 using CadastroUsuarios.Models;
-using CadastroUsuarios.ViewModel;
+
 
 namespace CadastroUsuarios.Controllers.Utils
 {
     public static class UsuarioMapper
     {
-        public static UsuarioViewModel ToViewModel(UsuarioModel model)
+        public static UsuarioDTO ToDto(UsuarioModel model)
         {
-            return new UsuarioViewModel
+            return new UsuarioDTO
             {
                 Id = model.Id,
                 Ativo = model.Ativo,
@@ -21,18 +22,18 @@ namespace CadastroUsuarios.Controllers.Utils
             };
         }
 
-        public static UsuarioModel ToModel(UsuarioViewModel viewModel)
+        public static UsuarioModel ToModel(UsuarioDTO dto)
         {
             return new UsuarioModel
             {
-                Id = viewModel.Id,
-                Ativo = viewModel.Ativo,
-                Nome = viewModel.Nome,
-                Sobrenome = viewModel.Sobrenome,
-                NomeSocial = viewModel.NomeSocial,
-                DataNascimento = viewModel.DataNascimento,
-                Cpf = viewModel.Cpf,
-                Senha = viewModel.Senha
+                Id = dto.Id,
+                Ativo = dto.Ativo,
+                Nome = dto.Nome,
+                Sobrenome = dto.Sobrenome,
+                NomeSocial = dto.NomeSocial,
+                DataNascimento = dto.DataNascimento,
+                Cpf = dto.Cpf,
+                Senha = dto.Senha
             };
         }
     }
