@@ -24,24 +24,44 @@ namespace CadastroUsuarios.Controllers
         [Route("")]
         public async Task<IHttpActionResult> Index(string filtro = "todos", string termoPesquisa = "")
         {
-            var query = await _service.PesquisaUsuarioAsync(filtro, termoPesquisa);
-            List<UsuarioDTO> usuarios = query.Select(u => UsuarioMapper.ToDto(u)).ToList();
-            return Ok(usuarios);
+            try
+            {
+                var query = await _service.PesquisaUsuarioAsync(filtro, termoPesquisa);
+                List<UsuarioDTO> usuarios = query.Select(u => UsuarioMapper.ToDto(u)).ToList();
+                
+                if (usuarios == null)
+                {
+                    return NotFound();
+                }
+                
+                return Ok(usuarios);
+            }
+            catch(ValidacaoException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("{id:int}")]
         public async Task<IHttpActionResult> Obter(int id)
         {
-            UsuarioModel usuarioModel = await _service.BuscarPorIdAsync(id);
-
-            if (usuarioModel == null)
+            try
             {
-                return NotFound();
-            }
+                UsuarioModel usuarioModel = await _service.BuscarPorIdAsync(id);
 
-            UsuarioDTO usuarioDto = UsuarioMapper.ToDto(usuarioModel);
-            return Ok(usuarioDto);
+                if (usuarioModel == null)
+                {
+                    return NotFound();
+                }
+
+                UsuarioDTO usuarioDto = UsuarioMapper.ToDto(usuarioModel);
+                return Ok(usuarioDto);
+            }
+            catch (ValidacaoException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -68,12 +88,17 @@ namespace CadastroUsuarios.Controllers
         }
 
         [HttpPut]
-        [Route("")]
-        public async Task<IHttpActionResult> Editar(UsuarioDTO usuarioDto)
+        [Route("{id:int}")]
+        public async Task<IHttpActionResult> Editar(int id, UsuarioDTO usuarioDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            if (id != usuarioDto.Id)
+            {
+                return BadRequest("O ID da URL não corresponde ao ID do usuário no corpo da requisição.");
             }
 
             try
@@ -104,7 +129,7 @@ namespace CadastroUsuarios.Controllers
             return Ok("Usuário Excluído");
         }
 
-        [HttpPut]
+        [HttpPatch] //uso do patch para modificar apenas um campo
         [Route("status/{id:int}")]
         public async Task<IHttpActionResult> AtualizarStatus(int id)
         {

@@ -7,6 +7,7 @@ namespace CadastroUsuarios.Data
     {
         public AppDbContext() : base("name=DefaultConnection")
         {
+            var ensureDLLIsCopied = System.Data.Entity.SqlServer.SqlProviderServices.Instance;
         }
 
         public DbSet<UsuarioModel> Usuarios { get; set; }
