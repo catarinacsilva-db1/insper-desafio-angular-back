@@ -15,7 +15,7 @@ namespace CadastroUsuarios.Service.Utils
 
         public async Task<IQueryable<UsuarioModel>> PesquisaUsuarioAsync(string filtro, string termoPesquisa)
         {
-            IQueryable<UsuarioModel> query = (IQueryable<UsuarioModel>)await _repository.ListarTodosAsync();
+            IQueryable<UsuarioModel> query = (await _repository.ListarTodosAsync()).AsQueryable();
 
             if (filtro == "ativo")
                 query = query.Where(u => u.Ativo);
