@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace CadastroUsuarios.Controllers
 {
-    [RoutePrefix("Usuario")]
+    [RoutePrefix("Usuarios")]
     public class UsuarioController : ApiController
     {
         private readonly IUsuarioService _service;
@@ -43,7 +43,7 @@ namespace CadastroUsuarios.Controllers
         }
 
         [HttpGet]
-        [Route("{id:int}")]
+        [Route("{id}")]
         public async Task<IHttpActionResult> Obter(int id)
         {
             try
@@ -88,7 +88,7 @@ namespace CadastroUsuarios.Controllers
         }
 
         [HttpPut]
-        [Route("{id:int}")]
+        [Route("{id}")]
         public async Task<IHttpActionResult> Editar(int id, UsuarioDTO usuarioDto)
         {
             if (!ModelState.IsValid)
