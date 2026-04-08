@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CadastroUsuarios.Models
 {
+    [Table("Usuarios")]
     public class UsuarioModel
     {
 

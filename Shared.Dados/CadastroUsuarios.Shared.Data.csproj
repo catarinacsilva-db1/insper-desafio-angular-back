@@ -56,6 +56,10 @@
     <Compile Include="Migrations\202512302001522_Initial.Designer.cs">
       <DependentUpon>202512302001522_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202604072156580_SincronizacaoManual.cs" />
+    <Compile Include="Migrations\202604072156580_SincronizacaoManual.Designer.cs">
+      <DependentUpon>202604072156580_SincronizacaoManual.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IUsuarioRepository.cs" />
@@ -64,6 +68,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202512302001522_Initial.resx">
       <DependentUpon>202512302001522_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202604072156580_SincronizacaoManual.resx">
+      <DependentUpon>202604072156580_SincronizacaoManual.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
